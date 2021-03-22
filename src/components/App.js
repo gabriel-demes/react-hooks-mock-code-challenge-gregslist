@@ -3,8 +3,8 @@ import Header from "./Header";
 import ListingsContainer from "./ListingsContainer";
 
 function App() {
-
   const [listings, setListings] = useState([])
+  const [search, setSearch] = useState("")
 
   useEffect(()=>{
     fetch("http://localhost:6001/listings")
@@ -18,18 +18,22 @@ function App() {
       headers: {"Text-Content" : "application/json"}
     })
       .then(r => r.json())
-      .then(setListings((listings)=> listings.filter(listing => listing !== item )))
+      .then(setListings(()=> listings.filter(listing => listing !== item )))
   }
 
-  const searchFilter = term => {
-    const filtered = listings.filter((listing) => listing.description.toLowerCase().includes(term.toLowerCase()))
-    setListings(filtered)
+  const filteredListings = () =>{
+    const filtered = listings.filter(listing => listing.description.toLowerCase().includes(search.toLowerCase()))
+    return filtered
   }
+
+
+
+  
 
   return (
     <div className="app">
-      <Header searchFilter={searchFilter} />
-      <ListingsContainer listings={listings} removeItem={removeItem}/>
+      <Header setSearch={setSearch} />
+      <ListingsContainer listings={filteredListings()} removeItem={removeItem}/>
     </div>
   );
 }
